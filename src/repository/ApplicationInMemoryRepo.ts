@@ -6,6 +6,16 @@ type HashMap = {
     [key in string]: number;    
 }
 
+interface JsonFormat {
+    id: string,
+    app_name: string,
+    app_version: string,
+    country: string,
+    developer: string,
+    date: string,
+}
+
+
 
 export class ApplicationInMemoryRepo {
 
@@ -17,8 +27,7 @@ export class ApplicationInMemoryRepo {
 
         const content = fs.readFileSync(filename, {encoding: 'utf-8'});
         this.ids = {};
-        this.store = JSON.parse(content).map((item, index) => {
-            //this.ids.set(item.id, index);
+        this.store = JSON.parse(content).map((item: JsonFormat, index: number) => {
             this.ids[item.id] = index;
             return new Application(item.id, item.app_name, item.app_version, item.country, item.developer, item.date)
         })
