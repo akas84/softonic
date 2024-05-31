@@ -15,7 +15,13 @@ describe('testing ApplicationInMemory repository', () => {
         expect(repository.getById('5668abbd-ea75-4ec8-a22e-14d58aab0865')).toBeNull();
     })
 
+    test('given date when requested search by date, then correct array is returned', () => {
 
+        const repository = new ApplicationInMemoryRepo(__dirname + '/product_test.json')
+        expect(repository.getByDate(new Date('2019-11-19'))).toBeInstanceOf(Array<Application>);
+
+        
+    })
 
 });
 
