@@ -65,16 +65,17 @@ export class ApplicationInMemoryRepo {
         return toReturn;
     }
 
+    getAll(limit: number = 1000, offset: number = 0) {
+        return this.store.slice(offset, offset + limit);
+    }
+
+
     private formatDate(date: Date): string
     {
         return date.getFullYear()+'-'+this.padTo2Digits(date.getMonth()+1)+'-'+this.padTo2Digits(date.getDate());
     }
 
-
-
     private padTo2Digits(num: number) {
        return num.toString().padStart(2, '0');
     }
-
-
 }
