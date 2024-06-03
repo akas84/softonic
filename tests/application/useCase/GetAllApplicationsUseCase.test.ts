@@ -1,7 +1,7 @@
 import { GetAllApplicationsUseCase } from "../../../src/application/useCase/GetAllApplicationsUseCase";
 import { Application } from "../../../src/entity/application";
 import { ApplicationRepository } from "../../../src/repository/ApplicationRepository";
-import {anyNumber, instance, mock, reset, when} from "ts-mockito";
+import { instance, mock, reset, when } from "ts-mockito";
 
 let mockedRepo:ApplicationRepository = mock<ApplicationRepository>();
 
@@ -12,36 +12,39 @@ describe('Controller behaviour', () => {
         reset(mockedRepo);
     })
 
-    test('Given params for limit and offset, params are sent to repo', () => {
+    const dataSet = [
+        [1, 2, 1, 2],
+        [null, null, 2, 3]
+    ];
 
-        const repo:ApplicationRepository = instance(mockedRepo);
-        const useCase = new GetAllApplicationsUseCase(repo, {
-            maxApplicationPerPage: 2,
-            defaultOffset: 3,
-        });
 
-        when(mockedRepo.getAll(1, 2)).thenReturn([new Application('', '', '', '', '', '')])
+    it.each(dataSet)
+        ('given params, then returns correct result', (
+            limit: number | null,
+            offset: number | null,
+            expectedLimit: number | null,
+            expetedOffset: number | null,
+        ) => {
 
-        const response = useCase.execute(1, 2);
+            if (expectedLimit === null || expetedOffset === null) {
+                throw 'Err'
+            }
+            const expectedId = 'expectedId'
 
-        expect(response?.length).toBe(1);
-        
-    })
+            const repo: ApplicationRepository = instance(mockedRepo);
+            const useCase = new GetAllApplicationsUseCase(repo, {
+                maxApplicationPerPage: 2,
+                defaultOffset: 3,
+            });
 
-    test('Given no params, then calls to repo with default and returns', () => {
+            when(mockedRepo.getAll(expectedLimit, expetedOffset)).thenReturn([new Application(expectedId, '', '', '', '', '')])
 
-        const repo:ApplicationRepository = instance(mockedRepo);
-        const useCase = new GetAllApplicationsUseCase(repo, {
-            maxApplicationPerPage: 2,
-            defaultOffset: 3,
-        });
+            const response = useCase.execute(limit, offset);
 
-        when(mockedRepo.getAll(2, 3)).thenReturn([new Application('', '', '', '', '', '')])
+            expect(response?.length).toBe(1);
+            expect(response?.[0].id).toBe(expectedId)
+        })
 
-        const response = useCase.execute(null, null);
-
-        expect(response?.length).toBe(1);
-    });
 
     test('Given null response from repo, then response is null', () => {
         const repo:ApplicationRepository = instance(mockedRepo);
@@ -56,7 +59,6 @@ describe('Controller behaviour', () => {
 
         expect(response).toBeNull();
     })
-
 
 })
 
