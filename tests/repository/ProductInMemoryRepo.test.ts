@@ -36,6 +36,22 @@ describe('testing ApplicationInMemory repository', () => {
         expect(secondPage.length).toBe(2)
     })
 
+    test('given pagination params in getByDate when called then works as expected', () => {
+        const repository = new ApplicationInMemoryRepo(__dirname + '/product_test.json')
+
+        const firstAppId = 'c126bbb3-0f5c-4ff6-97a7-b167ac2690f7';
+        const secondAppId = '7b11d30a-ae6d-4ac4-9802-e0b6413f6b2d'
+
+        const dateWithTwoApps = new Date('1987-07-01')
+
+        const firstPage = repository.getByDate(dateWithTwoApps, 1)
+        expect(firstPage?.length).toBe(1);
+        expect(firstPage?.[0]?.id).toBe(firstAppId);
+
+        const secondPage = repository.getByDate(dateWithTwoApps, 1, 1);
+        expect(secondPage?.[0].id).toBe(secondAppId);
+    })
+
 });
 
 

@@ -55,14 +55,15 @@ export class ApplicationInMemoryRepo {
         return this.store[this.ids[id]];
     }
 
-    getByDate(date: Date): Array<Application> | null
+    getByDate(date: Date, limit: number = 1000, offset: number = 0): Array<Application> | null
     {
+
         let toReturn: Array<Application> = [];
         this.indexByDate[this.formatDate(date)].forEach((value: number) => {
             toReturn.push(this.store[value]);
         })
 
-        return toReturn;
+        return toReturn.slice(offset, offset + limit);
     }
 
     getAll(limit: number = 1000, offset: number = 0) {
