@@ -31,6 +31,7 @@ class ApplicationInMemoryRepo {
         const content = fs.readFileSync(filename, { encoding: 'utf-8' });
         this.ids = {};
         this.indexByDate = {};
+        this.indexByVersion = {};
         this.store = JSON.parse(content).map((item, index) => {
             //add current item to index by id
             this.ids[item.id] = index;
@@ -38,6 +39,10 @@ class ApplicationInMemoryRepo {
             let ByDateObjects = this.indexByDate[item.date] || [];
             ByDateObjects.push(index);
             this.indexByDate[item.date] = ByDateObjects;
+            //we add the current item to index by date
+            let ByVersionsObjects = this.indexByVersion[item.app_version] || [];
+            ByVersionsObjects.push(index);
+            this.indexByVersion[item.app_version] = ByVersionsObjects;
             return new application_1.Application(item.id, item.app_name, item.app_version, item.country, item.developer, item.date);
         });
     }
@@ -54,7 +59,17 @@ class ApplicationInMemoryRepo {
         });
         return toReturn.slice(offset, offset + limit);
     }
+    getByVersion(version, limit = 1000, offset = 0) {
+        let toReturn = [];
+        this.indexByVersion[version].forEach((value) => {
+            toReturn.push(this.store[value]);
+        });
+        return toReturn.slice(offset, offset + limit);
+    }
     getAll(limit = 1000, offset = 0) {
+        if (this.store.length == 0) {
+            return null;
+        }
         return this.store.slice(offset, offset + limit);
     }
     formatDate(date) {

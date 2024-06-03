@@ -16,17 +16,23 @@ describe('testing ApplicationInMemory repository', () => {
         expect(repository.getByDate(new Date('2019-11-19'))).toBeInstanceOf((Array));
     });
     test('given request to getAll then first 1000 items are returned', () => {
+        var _a;
         const repository = new ApplicationInMemoryRepo_1.ApplicationInMemoryRepo(__dirname + '/product_test.json');
-        expect(repository.getAll(1000).length).toBe(1000);
+        expect((_a = repository.getAll(1000)) === null || _a === void 0 ? void 0 : _a.length).toBe(1000);
+    });
+    test('given version when requested by version then correct array is returned', () => {
+        var _a;
+        const repository = new ApplicationInMemoryRepo_1.ApplicationInMemoryRepo(__dirname + '/product_test.json');
+        expect((_a = repository.getByVersion('8.5.0')) === null || _a === void 0 ? void 0 : _a.length).toBe(3);
     });
     test('given pagination params then pagination works as expected', () => {
         const repository = new ApplicationInMemoryRepo_1.ApplicationInMemoryRepo(__dirname + '/product_test.json');
         const firstPage = repository.getAll(3);
-        expect(firstPage[0].id).toBe('5668abbd-ea75-4ec8-a22e-14d58ccb0865');
-        expect(firstPage.length).toBe(3);
+        expect(firstPage === null || firstPage === void 0 ? void 0 : firstPage[0].id).toBe('5668abbd-ea75-4ec8-a22e-14d58ccb0865');
+        expect(firstPage === null || firstPage === void 0 ? void 0 : firstPage.length).toBe(3);
         const secondPage = repository.getAll(2, 3);
-        expect(secondPage[0].id).toBe('6dadafba-cd72-4f0c-b2b3-267bbe8eb803');
-        expect(secondPage.length).toBe(2);
+        expect(secondPage === null || secondPage === void 0 ? void 0 : secondPage[0].id).toBe('6dadafba-cd72-4f0c-b2b3-267bbe8eb803');
+        expect(secondPage === null || secondPage === void 0 ? void 0 : secondPage.length).toBe(2);
     });
     test('given pagination params in getByDate when called then works as expected', () => {
         var _a;
@@ -39,5 +45,15 @@ describe('testing ApplicationInMemory repository', () => {
         expect((_a = firstPage === null || firstPage === void 0 ? void 0 : firstPage[0]) === null || _a === void 0 ? void 0 : _a.id).toBe(firstAppId);
         const secondPage = repository.getByDate(dateWithTwoApps, 1, 1);
         expect(secondPage === null || secondPage === void 0 ? void 0 : secondPage[0].id).toBe(secondAppId);
+    });
+    test('given pagination params in getByVersion when called then works as expected', () => {
+        const repository = new ApplicationInMemoryRepo_1.ApplicationInMemoryRepo(__dirname + '/product_test.json');
+        const expectedLastAppId = '6eb7ba91-0eb0-4818-b672-ecc5ff5d0d74';
+        const expectedSecondPageFirstId = '605ec024-3bfd-41b2-987e-1b62f7f94117';
+        const firstPage = repository.getByVersion('3.3.2', 2);
+        expect(firstPage === null || firstPage === void 0 ? void 0 : firstPage.length).toBe(2);
+        expect(firstPage === null || firstPage === void 0 ? void 0 : firstPage[1].id).toBe(expectedLastAppId);
+        const secondPage = repository.getByVersion('3.3.2', 2, 2);
+        expect(secondPage === null || secondPage === void 0 ? void 0 : secondPage[0].id).toBe(expectedSecondPageFirstId);
     });
 });
