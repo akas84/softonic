@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import { Application } from '../entity/application';
+import { ApplicationRepository } from './ApplicationRepository';
 
 type HashMapByIds = {
-    [key in string]: number;    
+    [key in string]: number;
 }
 
 type HashMapByString = {
@@ -20,7 +21,7 @@ interface JsonFormat {
 }
 
 
-export class ApplicationInMemoryRepo {
+export class ApplicationInMemoryRepo implements ApplicationRepository {
 
     store: Array<Application>;
     ids: HashMapByIds;
@@ -30,7 +31,7 @@ export class ApplicationInMemoryRepo {
 
     constructor(filename: string) {
 
-        const content = fs.readFileSync(filename, {encoding: 'utf-8'});
+        const content = fs.readFileSync(filename, { encoding: 'utf-8' });
         this.ids = {};
         this.indexByDate = {}
         this.indexByVersion = {}
@@ -63,8 +64,7 @@ export class ApplicationInMemoryRepo {
         return this.store[this.ids[id]];
     }
 
-    getByDate(date: Date, limit: number = 1000, offset: number = 0): Array<Application> | null
-    {
+    getByDate(date: Date, limit: number = 1000, offset: number = 0): Array<Application> | null {
 
         let toReturn: Array<Application> = [];
         this.indexByDate[this.formatDate(date)].forEach((value: number) => {
@@ -74,8 +74,7 @@ export class ApplicationInMemoryRepo {
         return toReturn.slice(offset, offset + limit);
     }
 
-    getByVersion(version: string, limit: number = 1000, offset: number = 0): Array<Application> | null
-    {
+    getByVersion(version: string, limit: number = 1000, offset: number = 0): Array<Application> | null {
         let toReturn: Array<Application> = [];
         this.indexByVersion[version].forEach((value: number) => {
             toReturn.push(this.store[value]);
@@ -85,17 +84,19 @@ export class ApplicationInMemoryRepo {
     }
 
 
-    getAll(limit: number = 1000, offset: number = 0) {
+    getAll(limit: number = 1000, offset: number = 0): Array<Application> | null {
+        if (this.store.length == 0) {
+            return null;
+        }
         return this.store.slice(offset, offset + limit);
     }
 
 
-    private formatDate(date: Date): string
-    {
-        return date.getFullYear()+'-'+this.padTo2Digits(date.getMonth()+1)+'-'+this.padTo2Digits(date.getDate());
+    private formatDate(date: Date): string {
+        return date.getFullYear() + '-' + this.padTo2Digits(date.getMonth() + 1) + '-' + this.padTo2Digits(date.getDate());
     }
 
     private padTo2Digits(num: number) {
-       return num.toString().padStart(2, '0');
+        return num.toString().padStart(2, '0');
     }
 }

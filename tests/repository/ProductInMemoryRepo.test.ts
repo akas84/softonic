@@ -24,7 +24,7 @@ describe('testing ApplicationInMemory repository', () => {
 
     test('given request to getAll then first 1000 items are returned', () => {
         const repository = new ApplicationInMemoryRepo(__dirname + '/product_test.json')
-        expect(repository.getAll(1000).length).toBe(1000)
+        expect(repository.getAll(1000)?.length).toBe(1000)
     })
 
     test('given version when requested by version then correct array is returned', () => {
@@ -35,11 +35,11 @@ describe('testing ApplicationInMemory repository', () => {
     test('given pagination params then pagination works as expected', () => {
         const repository = new ApplicationInMemoryRepo(__dirname + '/product_test.json')
         const firstPage = repository.getAll(3);
-        expect(firstPage[0].id).toBe('5668abbd-ea75-4ec8-a22e-14d58ccb0865')
-        expect(firstPage.length).toBe(3)
+        expect(firstPage?.[0].id).toBe('5668abbd-ea75-4ec8-a22e-14d58ccb0865')
+        expect(firstPage?.length).toBe(3)
         const secondPage = repository.getAll(2, 3);
-        expect(secondPage[0].id).toBe('6dadafba-cd72-4f0c-b2b3-267bbe8eb803')
-        expect(secondPage.length).toBe(2)
+        expect(secondPage?.[0].id).toBe('6dadafba-cd72-4f0c-b2b3-267bbe8eb803')
+        expect(secondPage?.length).toBe(2)
     })
 
     test('given pagination params in getByDate when called then works as expected', () => {
