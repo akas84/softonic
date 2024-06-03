@@ -1,5 +1,6 @@
 import { ApplicationInMemoryRepo } from '../../src/repository/ApplicationInMemoryRepo'
 import { Application } from '../../src/entity/application';
+import exp from 'constants';
 
 
 describe('testing ApplicationInMemory repository', () => {
@@ -26,6 +27,11 @@ describe('testing ApplicationInMemory repository', () => {
         expect(repository.getAll(1000).length).toBe(1000)
     })
 
+    test('given version when requested by version then correct array is returned', () => {
+        const repository = new ApplicationInMemoryRepo(__dirname + '/product_test.json')
+        expect(repository.getByVersion('8.5.0')?.length).toBe(3)
+    })
+
     test('given pagination params then pagination works as expected', () => {
         const repository = new ApplicationInMemoryRepo(__dirname + '/product_test.json')
         const firstPage = repository.getAll(3);
@@ -50,6 +56,21 @@ describe('testing ApplicationInMemory repository', () => {
 
         const secondPage = repository.getByDate(dateWithTwoApps, 1, 1);
         expect(secondPage?.[0].id).toBe(secondAppId);
+    })
+
+    test('given pagination params in getByVersion when called then works as expected', () => {
+
+        const repository = new ApplicationInMemoryRepo(__dirname + '/product_test.json')
+
+        const expectedLastAppId = '6eb7ba91-0eb0-4818-b672-ecc5ff5d0d74'
+        const expectedSecondPageFirstId = '605ec024-3bfd-41b2-987e-1b62f7f94117'
+
+        const firstPage = repository.getByVersion('3.3.2', 2)
+        expect(firstPage?.length).toBe(2)
+        expect(firstPage?.[1].id).toBe(expectedLastAppId)
+
+        const secondPage = repository.getByVersion('3.3.2', 2, 2)
+        expect(secondPage?.[0].id).toBe(expectedSecondPageFirstId)
     })
 
 });
