@@ -1,6 +1,6 @@
 
-export class config {
-
+export class Config {
     maxApplicationPerPage: number = 1000;
-    defaultOffset = 0;
+    defaultOffset: number = 0;
+    defaultCatalogFile: string = __dirname+'/../products.json';
 }

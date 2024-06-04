@@ -35,6 +35,7 @@ describe('Controller behaviour', () => {
             const useCase = new GetAllApplicationsUseCase(repo, {
                 maxApplicationPerPage: 2,
                 defaultOffset: 3,
+                defaultCatalogFile: '',
             });
 
             when(mockedRepo.getAll(expectedLimit, expetedOffset)).thenReturn([new Application(expectedId, '', '', '', '', '')])
@@ -51,6 +52,7 @@ describe('Controller behaviour', () => {
         const useCase = new GetAllApplicationsUseCase(repo, {
             maxApplicationPerPage: 2,
             defaultOffset: 3,
+            defaultCatalogFile: '',
         });
 
         when(mockedRepo.getAll(2, 3)).thenReturn(null)

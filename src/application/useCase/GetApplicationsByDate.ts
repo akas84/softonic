@@ -1,4 +1,4 @@
-import { config } from '../../config';
+import { Config } from '../../config';
 import { Application } from '../../entity/application';
 import { ApplicationRepository } from '../../repository/ApplicationRepository';
 
@@ -7,9 +7,9 @@ export class GetApplicationsByDate
 {
 
     repo: ApplicationRepository;
-    config: config;
+    config: Config;
 
-    constructor(repo: ApplicationRepository, config: config) {
+    constructor(repo: ApplicationRepository, config: Config) {
         this.repo = repo;
         this.config = config;
     }

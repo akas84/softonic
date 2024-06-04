@@ -37,6 +37,7 @@ describe('Controller behaviour', () => {
             const useCase = new GetApplicationsByDate(repo, {
                 maxApplicationPerPage: 2,
                 defaultOffset: 3,
+                defaultCatalogFile: '',
             });
 
             when(mockedRepo.getByDate(date, expectedLimit, expetedOffset)).thenReturn([new Application(expectedId, '', '', '', '', '')])
@@ -54,6 +55,7 @@ describe('Controller behaviour', () => {
         const useCase = new GetApplicationsByDate(repo, {
             maxApplicationPerPage: 2,
             defaultOffset: 3,
+            defaultCatalogFile: '',
         });
 
         when(mockedRepo.getByDate(date, 2, 3)).thenReturn(null)

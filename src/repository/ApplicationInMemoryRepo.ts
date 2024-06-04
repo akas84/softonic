@@ -1,6 +1,14 @@
 import * as fs from 'fs';
 import { Application } from '../entity/application';
 import { ApplicationRepository } from './ApplicationRepository';
+import { finished } from 'stream';
+import { parse } from 'path';
+// Constructing promisify from
+// util
+const { promisify } = require('util');
+// Defining finishedAsync method
+const finishedAsync = promisify(finished);
+
 
 type HashMapByIds = {
     [key in string]: number;
@@ -29,31 +37,54 @@ export class ApplicationInMemoryRepo implements ApplicationRepository {
     indexByVersion: HashMapByString;
 
 
-    constructor(filename: string) {
+    private constructor(items: Array<Application>, ids: HashMapByIds, indexByDate: HashMapByString, indexByVersion: HashMapByString) {
+        this.store = items;
+        this.ids = ids;
+        this.indexByDate = indexByDate;
+        this.indexByVersion = indexByVersion;
+    }
 
-        const content = fs.readFileSync(filename, { encoding: 'utf-8' });
-        this.ids = {};
-        this.indexByDate = {}
-        this.indexByVersion = {}
-        this.store = JSON.parse(content).map((item: JsonFormat, index: number) => {
+    static async initialize(filename: string) {
 
-            //add current item to index by id
-            this.ids[item.id] = index;
+        console.log("Initializing...\n");
+            let store: Array<Application> = [];
+            let ids: HashMapByIds = {};
+            let indexByDate: HashMapByString = {};
+            let indexByVersion: HashMapByString = {}; 
 
-            //we add the current item to index by date
-            let ByDateObjects = this.indexByDate[item.date] || [];
-            ByDateObjects.push(index)
+            const fs = require('fs');
+            const path = require('path');
+            const json = require('big-json');
+            const readStream = fs.createReadStream(filename);
+            const parseStream = json.createParseStream();
+            parseStream.on('data', (data: any) => {
+                console.log("data parsed")
+                store = data.map((item: JsonFormat, index: number) => {
+                    //add current item to index by id
+                    ids[item.id] = index;
 
-            this.indexByDate[item.date] = ByDateObjects;
+                    //we add the current item to index by date
+                    let ByDateObjects = indexByDate[item.date] || [];
+                    ByDateObjects.push(index)
 
-            //we add the current item to index by date
-            let ByVersionsObjects = this.indexByVersion[item.app_version] || [];
-            ByVersionsObjects.push(index)
+                    indexByDate[item.date] = ByDateObjects;
 
-            this.indexByVersion[item.app_version] = ByVersionsObjects;
+                    //we add the current item to index by date
+                    let ByVersionsObjects = indexByVersion[item.app_version] || [];
+                    ByVersionsObjects.push(index)
 
-            return new Application(item.id, item.app_name, item.app_version, item.country, item.developer, item.date)
-        })
+                    indexByVersion[item.app_version] = ByVersionsObjects;
+
+                    console.log('Created item '+index)
+
+                    return new Application(item.id, item.app_name, item.app_version, item.country, item.developer, item.date);
+                })
+            });
+
+            readStream.pipe(parseStream);
+            await finishedAsync(parseStream);
+
+            return new ApplicationInMemoryRepo(store, ids, indexByDate, indexByVersion);
     }
 
     getById(id: string): Application | null {

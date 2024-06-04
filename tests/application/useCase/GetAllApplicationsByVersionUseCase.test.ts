@@ -37,6 +37,7 @@ describe('Controller behaviour', () => {
             const useCase = new GetApplicationsByVersion(repo, {
                 maxApplicationPerPage: 2,
                 defaultOffset: 3,
+                defaultCatalogFile: '',
             });
 
             when(mockedRepo.getByVersion(expectedVersion, expectedLimit, expetedOffset))
@@ -55,6 +56,7 @@ describe('Controller behaviour', () => {
         const useCase = new GetApplicationsByVersion(repo, {
             maxApplicationPerPage: 2,
             defaultOffset: 3,
+            defaultCatalogFile: ''
         });
 
         when(mockedRepo.getByVersion(requestedVersion, 2, 3)).thenReturn(null)
